@@ -5,7 +5,7 @@ BEGIN
 use strict;
 use vars qw( $VERSION );
 
-	$VERSION = "0.10";
+	$VERSION = "0.11";
 }
 
 
@@ -20,39 +20,36 @@ my $returnString;
 	my $m = length ( $a );
 	my $n = length ( $b );
 
-	if ( $m < $n ) {
-		@x = split ( //, $a );	
-		@y = split ( //, $b );	
+	if ( $m > $n ) {
+		( $m, $n ) = ( $n, $m );
+		( $a, $b ) = ( $b, $a );
 	}
-	else {
-		my $temp = $n;
-		$n = $m;
-		$m = $n;
-		@x = split ( //, $b );	
-		@y = split ( //, $a );	
-	}
+
+	@x = split ( //, $a );	
+	@y = split ( //, $b );	
 
 	for ( my $k = 0; $k < $n; $k++ ) {
-		last if ( $maxLength >= ( $m -$k ) );
+		last if ( $maxLength >= ( $m - $k ) );
 
-		my $j = $k;
 		my ( $xi, $length ) = ( 0, 0 );
 
 		for ( my $i = 0; $i < $m; $i++ ) {
-			if ( $x[$i] eq $y[$j] ) {
-				$xi = $i unless ( $length );
-				$length++;
-				$j++;
+			my $j = $k;
+					$length = 0;
+			for ( my $ii = 0; $ii < ($m-$i); $ii++ ) {
+				if ( $x[$i+$ii] eq $y[$j] ) {
+					$xi = $i unless ( $length );
+					$length++;
+					$j++;
+				}
+				elsif ( $length ) {
+					if ( $length > $maxLength ) {
+						$maxLength = $length;
+						$maxXi = $xi;
+					}
+					last;
+				}
 			}
-			elsif ( $length ) {
-				last;
-			}
-		}
-
-		if ( $length > $maxLength ) {
-			$maxLength = $length;
-			$maxXi = $xi;
-			$j = $k;
 		}
 	}
 
@@ -79,7 +76,7 @@ __END__
 
 =head1 NAME
 
-String::LCSS - "Find The Longest Common Substring of Two Strings."
+String::LCSS - Find The Longest Common Substring of Two Strings.
 
 =head1 SYNOPSIS
 

@@ -18,3 +18,12 @@ is ( $longest, "abcxyz", "abcxyzzx vs abcxyzefg" );
 
 $longest = String::LCSS::lcss ( "foobar", "abcxyzefg" );
 is ( $longest, undef, "foobar vs abcxyzefg" );
+
+my $needle = "i pushed the lazy dog into a creek, the quick brown fox told me to";
+my $haystack = "the quick brown fox jumps over the lazy dog";
+
+$longest = String::LCSS::lcss ( $needle, $haystack );
+is ( $longest, "the quick brown fox ", "the quick brown fox" );
+
+$longest = String::LCSS::lcss ( $haystack, $needle );
+is ( $longest, "the quick brown fox ", "the quick brown fox (reverse args)" );
