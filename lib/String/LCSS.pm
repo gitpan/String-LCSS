@@ -1,11 +1,14 @@
 package String::LCSS;
+use base ( 'Exporter' );
 
 BEGIN
 {
 use strict;
-use vars qw( $VERSION );
+use vars qw( $VERSION @EXPORT_OK);
 
-	$VERSION = "0.11";
+	$VERSION = "0.12";
+
+	@EXPORT_OK = qw( lcss );
 }
 
 
@@ -13,7 +16,7 @@ sub lcss
 {
 my ($a, $b) = @_;
 my (@x, @y);
-my ($maxLength, $maxXi) = (0,0);
+my ($maxLength, $maxXi, $maxXk, $switch) = (0,0,0,0);
 my $returnString;
 
 
@@ -23,22 +26,33 @@ my $returnString;
 	if ( $m > $n ) {
 		( $m, $n ) = ( $n, $m );
 		( $a, $b ) = ( $b, $a );
+		$switch = 1;
 	}
 
 	@x = split ( //, $a );	
 	@y = split ( //, $b );	
 
-	for ( my $k = 0; $k < $n; $k++ ) {
+	#
+	# declare varialbes outside of loops for a hair more speed.
+	#
+	my ( $i, $ii, $j, $k, $length, $xi, $xj );
+
+	for ( $k = 0; $k < $n; $k++ ) {
+		#
+		# abort if the remainder of the string to check is
+		# less than the common substring length already found
+		#
 		last if ( $maxLength >= ( $m - $k ) );
 
-		my ( $xi, $length ) = ( 0, 0 );
+		( $xi, $length ) = ( 0, 0 );
 
-		for ( my $i = 0; $i < $m; $i++ ) {
-			my $j = $k;
-					$length = 0;
-			for ( my $ii = 0; $ii < ($m-$i); $ii++ ) {
+		for ( $i = 0; $i < $m; $i++ ) {
+			$j = $k;
+			$length = 0;
+			for ( $ii = 0; $ii < ($m-$i); $ii++ ) {
 				if ( $x[$i+$ii] eq $y[$j] ) {
-					$xi = $i unless ( $length );
+					$xi = $i+$ii unless ( $length );
+					$xj = $j unless ( $length );
 					$length++;
 					$j++;
 				}
@@ -46,6 +60,7 @@ my $returnString;
 					if ( $length > $maxLength ) {
 						$maxLength = $length;
 						$maxXi = $xi;
+						$maxXk = $xj;
 					}
 					last;
 				}
@@ -54,12 +69,13 @@ my $returnString;
 	}
 
 	if ( $maxLength > 1 ) {
-		for (my $i = $maxXi; $i < $maxXi+$maxLength; $i++ ) {
+		for ($i = $maxXi; $i < $maxXi+$maxLength; $i++ ) {
 			$returnString .= $x[$i];
 		}
+		($maxXi, $maxXk) = ($maxXk, $maxXi) if ( $switch );
 	}
 
-	$returnString;
+	( wantarray ) ? ( $returnString, $maxXi, $maxXk ) :  $returnString;
 }
 
 
@@ -84,12 +100,17 @@ String::LCSS - Find The Longest Common Substring of Two Strings.
   my $longest = String::LCSS::lcss ( "zyzxx", "abczyzefg" );
   print $longest, "\n";
 
+  my @result = String::LCSS::lcss ( "zyzxx", "abczyzefg" );
+  print "$result[0] ($result[1],$result[2])\n";
 
 =head1 DESCRIPTION
 
 String::LCSS provides the function "lcss" to ferret out the longest common
 substring shared by two strings passed as arguments.  C<undef> is returned
 if the susbstring length is one char or less.
+
+When used in an array context, lcss will returns the indexi of the match
+root in the two args.
 
 =head1 COPYRIGHT
 

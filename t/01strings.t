@@ -27,3 +27,7 @@ is ( $longest, "the quick brown fox ", "the quick brown fox" );
 
 $longest = String::LCSS::lcss ( $haystack, $needle );
 is ( $longest, "the quick brown fox ", "the quick brown fox (reverse args)" );
+
+$haystack = "why did the quick brown fox jumps over the lazy dog";
+$longest = String::LCSS::lcss ( $needle, $haystack );
+is ( $longest, " the quick brown fox ", "why did the quick brown fox" );

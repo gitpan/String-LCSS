@@ -1,3 +1,9 @@
+0.12 Thu Apr 10 11:58:45 EDT 2003
+	- when used in an array context lcss now returns the
+          indexi of the match position of the two args.
+	- the lcss function is exportable.
+	- another algorithm tweak.
+
 0.11 Wed Apr  9 17:55:10 EDT 2003
 	- fixed algorithm for major flaw.
 	- added "the quick brown fox" tests. 
